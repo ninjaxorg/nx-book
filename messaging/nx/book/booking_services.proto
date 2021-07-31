@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package nx.book;
+
+import "nx/book/orders.proto";
+
+enum RequestType {
+    REQUEST_TYPE_SESSION = 0;
+    REQUEST_TYPE_NEW_ORDER = 1;
+    REQUEST_TYPE_MODIFY_ORDER = 2;
+    REQUEST_TYPE_CANCEL_ORDER = 3;
+}
+
+enum ResponseType {
+    RESPONSE_TYPE_SESSION = 0;    
+    RESPONSE_TYPE_NEW_ORDER_ACK = 1;    
+    RESPONSE_TYPE_NEW_ORDER_REJECTED = 2;
+    RESPONSE_TYPE_MODIFY_ORDER_ACK = 3;
+    RESPONSE_TYPE_MODIFY_ORDER_REJECTED = 4;
+    RESPONSE_TYPE_CANCEL_ORDER_ACK = 5;
+    RESPONSE_TYPE_CANCEL_ORDER_REJECTED = 6;    
+    RESPONSE_TYPE_EXECUTION = 7;    
+}
+
+message SessionRequest {
+    int64 client_id = 1;
+}
+
+message SessionResponse {
+    int64 client_id = 1;
+}
+
+message BookingRequest {
+    SessionRequest session_request = 1;
+    RequestType type = 2;
+    NewOrder new_order = 3;
+    ModifyOrder modify_order = 4;
+    CancelOrder cancel_order = 5;
+}
+
+message BookingResponse {
+    SessionResponse session_response = 1;
+    ResponseType type = 2;
+    NewOrderResponse new_order_response = 3;
+    ModifyOrderResponse modify_order_response = 4;
+    CancelOrderResponse cancel_order_response = 5;
+    Execution execution = 6;
+}
+
+service Booking {
+    rpc OpenSession(stream BookingRequest) returns (stream BookingResponse) {}
+}
